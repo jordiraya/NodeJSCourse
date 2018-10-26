@@ -20,7 +20,7 @@ describe('App', () => {
     it('should saveUser with user object', () => {
         var email = 'andrew@example.com';
         var password = '123abc';
-        app.handleSignup(email, password);
+        app.handleSignup(email, password); // will call our rewired db
         expect(db.saveUser).toHaveBeenCalledWith({email, password});
     });
 });
