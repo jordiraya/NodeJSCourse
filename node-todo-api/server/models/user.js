@@ -48,7 +48,8 @@ UserSchema.methods.toJSON = function() {
 UserSchema.methods.generateAuthToken = function () {
     var user = this;
     var access = 'auth';
-    var token = jwt.sign({_id: user._id.toHexString(), access}, 'salt_bytes').toString();
+    // process.env.JWT_SECRET are the salt bytes
+    var token = jwt.sign({_id: user._id.toHexString(), access}, process.env.JWT_SECRET).toString();
 
     user.tokens = user.tokens.concat([{access, token}]);
 
@@ -63,7 +64,8 @@ UserSchema.statics.findByToken = function (token) {
     var decoded;
 
     try {
-        decoded = jwt.verify(token, 'salt_bytes');
+        // process.env.JWT_SECRET are the salt bytes
+        decoded = jwt.verify(token, process.env.JWT_SECRET);
     } catch(e) {
         // it's the same
         // return new Promise((resolve, reject) => {
