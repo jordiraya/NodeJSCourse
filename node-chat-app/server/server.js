@@ -14,6 +14,16 @@ app.use(express.static(publicPath)); // set path root to public/index.html
 io.on('connection', (socket) => {
     console.log('new user connected');
 
+    socket.emit('newMessage', {
+        from: 'LastMonkey',
+        text: 'See you then',
+        createdAt: 123
+    });
+
+    socket.on('createMessage', (message) => {
+        console.log('createMessage', message);
+    });
+
     socket.on('disconnect', () => {
         console.log('user was disconnected')
     });
