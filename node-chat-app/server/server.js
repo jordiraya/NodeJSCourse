@@ -16,10 +16,6 @@ app.use(express.static(publicPath)); // set path root to public/index.html
 io.on('connection', (socket) => {
     console.log('new user connected');
 
-    socket.emit('newMessage', generateMessage('admin', 'welcome to the chat'));
-
-    socket.broadcast.emit('newMessage', generateMessage('admin', 'new user joined'));
-
     socket.on('createMessage', (message, callback) => {
         console.log('createMessage', message);
         // emit to all users, including emitter
@@ -35,12 +31,25 @@ io.on('connection', (socket) => {
     });
 
     socket.on('join', (params, callback) => {
-        console.log("name ", params.name);
-        console.log("room ", params.room);
-
         if (!isRealString(params.name) || !isRealString(params.room)) {
             callback('Name and room name are required');
         }
+
+        socket.join(params.room);
+        // socket.leave('the room to leave');
+
+        // target users
+        // io.emit -> emit to every single connected user
+        // socket.broadcast.emit -> emit to everyone connected to the socket server except the current user
+        // socket.emit -> emit specifically to one user
+
+        // emissions to chat rooms
+        // io.emit -> io.to('chat room').emit
+        // socket.broadcast.emit -> socket.broadcast.to('chat room').emit
+
+        socket.emit('newMessage', generateMessage('admin', 'welcome to the chat'));
+
+        socket.broadcast.to(params.room).emit('newMessage', generateMessage('admin', `${params.name} has joined`));
 
         callback();
     }); 
